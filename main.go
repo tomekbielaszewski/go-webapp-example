@@ -33,7 +33,18 @@ func searchHandler(client *news.Client) http.HandlerFunc {
 			page = "1"
 		}
 
-		fmt.Printf("Search query reached. Params: q=%s page=%s", q, page)
+		results, err := client.FetchEverything(q, page)
+		if err != nil {
+
+		} else if results != nil {
+			log.Printf("Search query reached. Params: q=%s page=%s\n", q, page)
+			log.Printf("============ Results ============\n", q, page)
+			for _, article := range results.Articles {
+				log.Printf("\"%s\" @%s\n", article.Title, article.Source.Name)
+			}
+		} else {
+			log.Printf("No results but no error thrown\n")
+		}
 	}
 }
 
