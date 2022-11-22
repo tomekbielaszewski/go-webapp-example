@@ -18,6 +18,21 @@ func indexHandler(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func searchHandler(res http.ResponseWriter, req *http.Request) {
+	query := req.URL.Query()
+	q := query.Get("q")
+	page := query.Get("page")
+
+	if q == "" {
+		http.Error(res, "Empty query won't find any results", http.StatusNotFound)
+	}
+	if page == "" {
+		page = "1"
+	}
+
+	fmt.Printf("Search query reached. Params: q=%s page=%s", q, page)
+}
+
 const PortVar = "PORT"
 const DefaultPort = "8080"
 
@@ -31,6 +46,7 @@ func main() {
 	fs := http.FileServer(http.Dir("assets"))
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", indexHandler)
+	mux.HandleFunc("/search", searchHandler)
 	mux.Handle("/assets/", http.StripPrefix("/assets/", fs))
 
 	fmt.Println("Server started at port " + port)
