@@ -28,8 +28,12 @@ func main() {
 	}
 	port := GetPort()
 
+	fs := http.FileServer(http.Dir("assets"))
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", indexHandler)
+	mux.Handle("/assets/", http.StripPrefix("/assets/", fs))
+
+	fmt.Println("Server started at port " + port)
 	err = http.ListenAndServe(":"+port, mux)
 	if err != nil {
 		fmt.Println(fmt.Errorf("problem when starting server: %s", err))
