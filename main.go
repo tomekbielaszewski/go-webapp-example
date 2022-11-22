@@ -3,13 +3,19 @@ package main
 import (
 	"fmt"
 	"github.com/joho/godotenv"
+	"html/template"
 	"net/http"
 	"os"
 )
 
+var tpl = template.Must(template.ParseFiles("assets/index.html"))
+
 func indexHandler(res http.ResponseWriter, req *http.Request) {
-	resString := fmt.Sprintf("<html><body><h1>You've visited: %s</h1></body></html>", req.URL.String())
-	res.Write([]byte(resString))
+	err := tpl.Execute(res, req.URL.String())
+	if err != nil {
+		res.WriteHeader(500)
+		_, _ = res.Write([]byte("ISE:" + err.Error()))
+	}
 }
 
 const PortVar = "PORT"
